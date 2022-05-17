@@ -1,0 +1,20 @@
+{
+  "name": "chip8-client",
+  "private": true,
+  "version": "0.0.1",
+  "description": "CHIP-8 web client",
+  "author": "Jakub Dobes <dobes.jakub@gmail.com>",
+  "license": "ISC",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "typescript": "^4.5.4",
+    "vite": "^2.9.9"
+  },
+  "dependencies": {
+    "two.js": "^0.8.7"
+  }
+}

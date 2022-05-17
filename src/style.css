@@ -1,0 +1,10 @@
+#app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#screen {
+  display: flex;
+  margin-top: 40px;
+}
