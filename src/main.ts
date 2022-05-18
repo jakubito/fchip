@@ -1,6 +1,7 @@
 import Two from 'two.js'
 import { Constants } from 'two.js/src/constants'
 import { Rectangle } from 'two.js/src/shapes/rectangle'
+import { Oscillator } from 'tone'
 import { instantiate } from '../core/build/core'
 import { setPreciseInterval } from './helpers'
 import { Key, Keymap } from './types'
@@ -25,17 +26,15 @@ const memory = new Uint8Array(buffer, module.getMemoryPointer(instance), 4096)
 const screen = new Uint8Array(buffer, module.getScreenPointer(instance), 2048)
 const keys = new Uint8Array(buffer, module.getKeysPointer(instance), 16)
 const timers = new Uint8ClampedArray(buffer, module.getTimersPointer(instance), 2)
-const pixels = new Array<Rectangle>(screen.length)
 
 const fileInput = document.querySelector<HTMLInputElement>('#file')!
 const loadButton = document.querySelector<HTMLButtonElement>('#load')!
 const screenElement = document.querySelector<HTMLCanvasElement>('#screen')!
 
-const two = new Two({
-  type: Constants.Types.canvas,
-  width: 640,
-  height: 320,
-}).appendTo(screenElement)
+const oscillator = new Oscillator(1000, 'square').toDestination()
+const pixels = new Array<Rectangle>(screen.length)
+const two = new Two({ type: Constants.Types.canvas, width: 640, height: 320 })
+two.appendTo(screenElement)
 
 document.addEventListener('keydown', (event) => {
   if (event.code in Keymap) keys[Keymap[<Key>event.code]] = 1
@@ -71,6 +70,8 @@ function setPixels() {
 
 function setTimers() {
   setPreciseInterval(() => {
+    if (timers[1] > 0) oscillator.start()
+    else oscillator.stop()
     timers[0]--
     timers[1]--
   }, 1000 / 60)
