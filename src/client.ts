@@ -9,8 +9,8 @@ import './style.css'
 
 const CYCLES_PER_SECOND = 1200
 const PIXEL_SIZE = 10
-const PIXEL_OFF = '#f9f9f9'
-const PIXEL_ON = '#222222'
+const PIXEL_OFF = '#222222'
+const PIXEL_ON = '#f9f9f9'
 
 const moduleUrl = import.meta.env.PROD
   ? `/core.wasm?v=${import.meta.env.VITE_APP_CORE_VERSION}`
@@ -29,12 +29,21 @@ const timers = new Uint8ClampedArray(buffer, module.getTimersPointer(instance), 
 
 const fileInput = document.querySelector<HTMLInputElement>('#file')!
 const loadButton = document.querySelector<HTMLButtonElement>('#load')!
-const screenElement = document.querySelector<HTMLCanvasElement>('#screen')!
+const display = document.querySelector<HTMLCanvasElement>('#display')!
 
 const oscillator = new Oscillator(1000, 'square').toDestination()
 const pixels = new Array<Rectangle>(screen.length)
-const two = new Two({ type: Constants.Types.canvas, width: 640, height: 320 })
-two.appendTo(screenElement)
+const two = new Two({ type: Constants.Types.canvas, width: 640, height: 320 }).appendTo(display)
+
+let stop: () => void
+
+for (let i = 0; i < screen.length; i++) {
+  const x = (i % 64) * PIXEL_SIZE + PIXEL_SIZE / 2
+  const y = Math.floor(i / 64) * PIXEL_SIZE + PIXEL_SIZE / 2
+  const pixel = two.makeRectangle(x, y, PIXEL_SIZE, PIXEL_SIZE)
+  pixel.noStroke()
+  pixels[i] = pixel
+}
 
 document.addEventListener('keydown', (event) => {
   if (!Keymap.hasOwnProperty(event.code)) return
@@ -60,36 +69,19 @@ document.addEventListener('keyup', (event) => {
 loadButton.addEventListener('click', async () => {
   if (!fileInput.files?.length) return
   const buffer = await fileInput.files[0].arrayBuffer()
-  memory.set(new Uint8Array(buffer), 0x200)
-  start()
+  load(buffer)
 })
 
+function load(buffer: ArrayBuffer) {
+  stop?.()
+  module.reset(instance)
+  memory.set(new Uint8Array(buffer), 0x200)
+  stop = start()
+}
+
 function start() {
-  setPixels()
-  setTimers()
-  startRendering()
-}
-
-function setPixels() {
-  for (let i = 0; i < screen.length; i++) {
-    const x = (i % 64) * PIXEL_SIZE + PIXEL_SIZE / 2
-    const y = Math.floor(i / 64) * PIXEL_SIZE + PIXEL_SIZE / 2
-    const pixel = two.makeRectangle(x, y, PIXEL_SIZE, PIXEL_SIZE)
-    pixel.noStroke()
-    pixels[i] = pixel
-  }
-}
-
-function setTimers() {
-  setPreciseInterval(() => {
-    if (timers[1] > 0) oscillator.start()
-    else oscillator.stop()
-    timers[0]--
-    timers[1]--
-  }, 1000 / 60)
-}
-
-function startRendering() {
+  const id = { value: 0 }
+  const clearTimers = setTimers()
   let previousTime = performance.now()
 
   function frame(time: DOMHighResTimeStamp) {
@@ -101,8 +93,24 @@ function startRendering() {
     for (let i = 0; i < screen.length; i++) pixels[i].fill = screen[i] ? PIXEL_ON : PIXEL_OFF
 
     two.update()
-    requestAnimationFrame(frame)
+    id.value = requestAnimationFrame(frame)
   }
 
-  requestAnimationFrame(frame)
+  function stop() {
+    cancelAnimationFrame(id.value)
+    clearTimers()
+  }
+
+  id.value = requestAnimationFrame(frame)
+
+  return stop
+}
+
+function setTimers() {
+  return setPreciseInterval(() => {
+    if (timers[1] > 0) oscillator.start()
+    else oscillator.stop()
+    timers[0]--
+    timers[1]--
+  }, 1000 / 60)
 }
