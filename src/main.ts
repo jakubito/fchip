@@ -4,7 +4,7 @@ import { Rectangle } from 'two.js/src/shapes/rectangle'
 import { Oscillator } from 'tone'
 import { instantiate } from '../core/build/core'
 import { setPreciseInterval } from './helpers'
-import { Key, Keymap } from './types'
+import { Keymap } from './enums'
 import './style.css'
 
 const CYCLES_PER_SECOND = 1200
@@ -37,17 +37,29 @@ const two = new Two({ type: Constants.Types.canvas, width: 640, height: 320 })
 two.appendTo(screenElement)
 
 document.addEventListener('keydown', (event) => {
-  if (event.code in Keymap) keys[Keymap[<Key>event.code]] = 1
+  if (!Keymap.hasOwnProperty(event.code)) return
+  if (event.repeat) return
+
+  const keyValue = Keymap[<keyof typeof Keymap>event.code]
+  keys[keyValue] = 1
 })
 
 document.addEventListener('keyup', (event) => {
-  if (event.code in Keymap) keys[Keymap[<Key>event.code]] = 0
+  if (!Keymap.hasOwnProperty(event.code)) return
+  if (event.repeat) return
+
+  const keyValue = Keymap[<keyof typeof Keymap>event.code]
+  keys[keyValue] = 0
+
+  if (memory[0xb0] === 1) {
+    memory[0xb0] = 2
+    memory[0xb1] = keyValue
+  }
 })
 
 loadButton.addEventListener('click', async () => {
   if (!fileInput.files?.length) return
-  const file = fileInput.files[0]
-  const buffer = await file.arrayBuffer()
+  const buffer = await fileInput.files[0].arrayBuffer()
   memory.set(new Uint8Array(buffer), 0x200)
   start()
 })

@@ -68,6 +68,12 @@ class Chip8 {
     }
   }
 
+  runCycle(): void {
+    this.opcode = ((<u16>this.memory[this.pc]) << 8) | this.memory[this.pc + 1]
+    this.pc += 2
+    this.codes[(this.opcode & 0xf000) >> 12].call(this)
+  }
+
   getX(): u8 {
     return <u8>((this.opcode & 0x0f00) >> 8)
   }
@@ -102,12 +108,6 @@ class Chip8 {
 
   setVF(value: u8): void {
     this.variables[0xf] = value
-  }
-
-  runCycle(): void {
-    this.opcode = ((<u16>this.memory[this.pc]) << 8) | this.memory[this.pc + 1]
-    this.pc += 2
-    this.codes[(this.opcode & 0xf000) >> 12].call(this)
   }
 
   handle0x(): void {
@@ -263,9 +263,13 @@ class Chip8 {
   }
 
   codeFX0A(): void {
-    const pressedKey = this.keys.findIndex((value) => value === 1)
-    if (pressedKey >= 0) this.setVX(<u8>pressedKey)
-    else this.pc -= 2
+    if (this.memory[0xb0] === 2) {
+      this.memory[0xb0] = 0
+      this.setVX(this.memory[0xb1])
+    } else {
+      this.memory[0xb0] = 1
+      this.pc -= 2
+    }
   }
 
   codeFX15(): void {

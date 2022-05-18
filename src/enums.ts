@@ -16,5 +16,3 @@ export enum Keymap {
   KeyC = 0xb,
   KeyV = 0xf,
 }
-
-export type Key = keyof typeof Keymap
