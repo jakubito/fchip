@@ -1,18 +1,21 @@
 import Two from 'two.js'
 import { Constants } from 'two.js/src/constants'
 import { Rectangle } from 'two.js/src/shapes/rectangle'
-import { instantiate, __AdaptedExports } from '../core/build/debug'
+import { instantiate } from '../core/build/core'
 import { setPreciseInterval } from './helpers'
 import { Key, Keymap } from './types'
 import './style.css'
 
-const MODULE_URL = 'http://localhost:8001/debug.wasm'
 const CYCLES_PER_SECOND = 1200
 const PIXEL_SIZE = 10
 const PIXEL_OFF = '#f9f9f9'
 const PIXEL_ON = '#222222'
 
-const compiledModule = await WebAssembly.compileStreaming(fetch(MODULE_URL))
+const moduleUrl = import.meta.env.PROD
+  ? `/core.wasm?v=${import.meta.env.VITE_APP_CORE_VERSION}`
+  : 'http://localhost:8001/debug.wasm'
+
+const compiledModule = await WebAssembly.compileStreaming(fetch(moduleUrl))
 const module = await instantiate(compiledModule, { env: {} })
 
 // @ts-ignore

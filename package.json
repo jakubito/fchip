@@ -6,8 +6,11 @@
   "author": "Jakub Dobes <dobes.jakub@gmail.com>",
   "license": "ISC",
   "scripts": {
+    "postinstall": "cd core && npm install",
     "dev": "vite",
-    "build": "tsc && vite build",
+    "prebuild": "cd core && npm run build:release",
+    "build": "tsc && VITE_APP_CORE_VERSION=`cd core && npm run get:version --silent` vite build",
+    "postbuild": "cp core/build/core.wasm dist/core.wasm",
     "preview": "vite preview"
   },
   "devDependencies": {
