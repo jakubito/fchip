@@ -63,15 +63,35 @@ class Chip8 {
     this.codesFx[0x55] = this.codeFX55
     this.codesFx[0x65] = this.codeFX65
 
-    for (let i = 0; i < font.length; i++) {
-      this.memory[0x50 + i] = font[i]
-    }
+    this.loadFont()
   }
 
   runCycle(): void {
     this.opcode = ((<u16>this.memory[this.pc]) << 8) | this.memory[this.pc + 1]
     this.pc += 2
     this.codes[(this.opcode & 0xf000) >> 12].call(this)
+  }
+
+  reset(): void {
+    this.memory.fill(0)
+    this.screen.fill(0)
+    this.keys.fill(0)
+    this.timers.fill(0)
+    this.variables.fill(0)
+    this.stack.fill(0)
+
+    this.stackIndex = 0
+    this.index = 0
+    this.opcode = 0
+    this.pc = 0x200
+
+    this.loadFont()
+  }
+
+  loadFont(): void {
+    for (let i = 0; i < font.length; i++) {
+      this.memory[0x50 + i] = font[i]
+    }
   }
 
   getX(): u8 {
@@ -313,6 +333,10 @@ export function createInstance(): Chip8 {
 
 export function runCycle(instance: Chip8): void {
   instance.runCycle()
+}
+
+export function reset(instance: Chip8): void {
+  instance.reset()
 }
 
 export function getMemoryPointer(instance: Chip8): usize {
