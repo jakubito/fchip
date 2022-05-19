@@ -1,7 +1,7 @@
 import Two from 'two.js'
 import { Constants } from 'two.js/src/constants'
 import { Rectangle } from 'two.js/src/shapes/rectangle'
-import { Oscillator } from 'tone'
+import { Oscillator, Volume } from 'tone'
 import { instantiate } from '../core/build/core'
 import { setPreciseInterval } from './helpers'
 import { Keymap } from './enums'
@@ -33,9 +33,11 @@ const loadButton = document.querySelector<HTMLButtonElement>('#load')!
 const display = document.querySelector<HTMLDivElement>('#display')!
 const cyclesInput = document.querySelector<HTMLInputElement>('#cycles-input')!
 const cyclesValue = document.querySelector<HTMLSpanElement>('#cycles-value')!
-const scaleSelect = document.querySelector<HTMLSelectElement>('#scale')!
+const scaleInput = document.querySelector<HTMLInputElement>('#scale')!
+const volumeInput = document.querySelector<HTMLInputElement>('#volume')!
 
-const oscillator = new Oscillator(1000, 'square').toDestination()
+const volumeNode = new Volume(-35).toDestination()
+const oscillator = new Oscillator(800, 'square').connect(volumeNode)
 const pixels = new Array<Rectangle>(screen.length)
 const two = new Two({ type: Constants.Types.canvas, width: 640, height: 320 }).appendTo(display)
 
@@ -81,8 +83,8 @@ cyclesInput.addEventListener('input', () => {
   cyclesValue.innerHTML = cyclesInput.value
 })
 
-scaleSelect.addEventListener('input', () => {
-  screenScale = Number(scaleSelect.value) / 100
+scaleInput.addEventListener('input', () => {
+  screenScale = Number(scaleInput.value) / 100
   two.width = 640 * screenScale
   two.height = 320 * screenScale
   for (let i = 0; i < screen.length; i++) {
@@ -91,6 +93,16 @@ scaleSelect.addEventListener('input', () => {
       Math.floor(i / 64) * (PIXEL_SIZE * screenScale) + (PIXEL_SIZE * screenScale) / 2
     pixels[i].width = PIXEL_SIZE * screenScale
     pixels[i].height = PIXEL_SIZE * screenScale
+  }
+})
+
+volumeInput.addEventListener('input', () => {
+  const value = Number(volumeInput.value)
+  if (value === 0) {
+    volumeNode.mute = true
+  } else {
+    volumeNode.mute = false
+    volumeNode.volume.value = -30 * ((100 - value) / 100) - 20
   }
 })
 
