@@ -7,7 +7,8 @@ import { setPreciseInterval } from './helpers'
 import { Keymap } from './enums'
 import './style.css'
 
-const CYCLES_PER_SECOND = 1200
+let CYCLES_PER_SECOND = 1000
+let screenScale = 1
 const PIXEL_SIZE = 10
 const PIXEL_OFF = '#222222'
 const PIXEL_ON = '#f9f9f9'
@@ -29,7 +30,10 @@ const timers = new Uint8ClampedArray(buffer, module.getTimersPointer(instance), 
 
 const fileInput = document.querySelector<HTMLInputElement>('#file')!
 const loadButton = document.querySelector<HTMLButtonElement>('#load')!
-const display = document.querySelector<HTMLCanvasElement>('#display')!
+const display = document.querySelector<HTMLDivElement>('#display')!
+const cyclesInput = document.querySelector<HTMLInputElement>('#cycles-input')!
+const cyclesValue = document.querySelector<HTMLSpanElement>('#cycles-value')!
+const scaleSelect = document.querySelector<HTMLSelectElement>('#scale')!
 
 const oscillator = new Oscillator(1000, 'square').toDestination()
 const pixels = new Array<Rectangle>(screen.length)
@@ -72,6 +76,24 @@ loadButton.addEventListener('click', async () => {
   load(buffer)
 })
 
+cyclesInput.addEventListener('change', () => {
+  CYCLES_PER_SECOND = Number(cyclesInput.value)
+  cyclesValue.innerHTML = cyclesInput.value
+})
+
+scaleSelect.addEventListener('change', () => {
+  screenScale = Number(scaleSelect.value) / 100
+  two.width = 640 * screenScale
+  two.height = 320 * screenScale
+  for (let i = 0; i < screen.length; i++) {
+    pixels[i].translation.x = (i % 64) * (PIXEL_SIZE * screenScale) + (PIXEL_SIZE * screenScale) / 2
+    pixels[i].translation.y =
+      Math.floor(i / 64) * (PIXEL_SIZE * screenScale) + (PIXEL_SIZE * screenScale) / 2
+    pixels[i].width = PIXEL_SIZE * screenScale
+    pixels[i].height = PIXEL_SIZE * screenScale
+  }
+})
+
 function load(buffer: ArrayBuffer) {
   stop?.()
   module.reset(instance)
@@ -83,6 +105,7 @@ function start() {
   const id = { value: 0 }
   const clearTimers = setTimers()
   let previousTime = performance.now()
+  display.classList.add('running')
 
   function frame(time: DOMHighResTimeStamp) {
     const delta = time - previousTime
