@@ -76,12 +76,12 @@ loadButton.addEventListener('click', async () => {
   load(buffer)
 })
 
-cyclesInput.addEventListener('change', () => {
+cyclesInput.addEventListener('input', () => {
   CYCLES_PER_SECOND = Number(cyclesInput.value)
   cyclesValue.innerHTML = cyclesInput.value
 })
 
-scaleSelect.addEventListener('change', () => {
+scaleSelect.addEventListener('input', () => {
   screenScale = Number(scaleSelect.value) / 100
   two.width = 640 * screenScale
   two.height = 320 * screenScale
