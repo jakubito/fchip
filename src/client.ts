@@ -10,8 +10,7 @@ import './style.css'
 let CYCLES_PER_SECOND = 1000
 let screenScale = 1
 const PIXEL_SIZE = 10
-const PIXEL_OFF = '#222222'
-const PIXEL_ON = '#f9f9f9'
+const PIXEL_COLOR = '#f9f9f9'
 
 const moduleUrl = import.meta.env.PROD
   ? `/core.wasm?v=${import.meta.env.VITE_APP_CORE_VERSION}`
@@ -48,6 +47,8 @@ for (let i = 0; i < screen.length; i++) {
   const y = Math.floor(i / 64) * PIXEL_SIZE + PIXEL_SIZE / 2
   const pixel = two.makeRectangle(x, y, PIXEL_SIZE, PIXEL_SIZE)
   pixel.noStroke()
+  pixel.fill = PIXEL_COLOR
+  pixel.visible = false
   pixels[i] = pixel
 }
 
@@ -94,6 +95,7 @@ scaleInput.addEventListener('input', () => {
     pixels[i].width = PIXEL_SIZE * screenScale
     pixels[i].height = PIXEL_SIZE * screenScale
   }
+  two.update()
 })
 
 volumeInput.addEventListener('input', () => {
@@ -117,7 +119,6 @@ function start() {
   const id = { value: 0 }
   const clearTimers = setTimers()
   let previousTime = performance.now()
-  display.classList.add('running')
 
   function frame(time: DOMHighResTimeStamp) {
     const delta = time - previousTime
@@ -125,7 +126,7 @@ function start() {
     previousTime = time
 
     for (let i = 0; i < cycles; i++) module.runCycle(instance)
-    for (let i = 0; i < screen.length; i++) pixels[i].fill = screen[i] ? PIXEL_ON : PIXEL_OFF
+    for (let i = 0; i < screen.length; i++) pixels[i].visible = Boolean(screen[i])
 
     two.update()
     id.value = requestAnimationFrame(frame)

@@ -204,13 +204,13 @@ class Chip8 {
 
   code8XY4(): void {
     const vx = this.getVX()
-    this.setVX(this.getVX() + this.getVY())
+    this.setVX(vx + this.getVY())
     this.setVF(vx > this.getVX() ? 1 : 0)
   }
 
   code8XY5(): void {
     const vx = this.getVX()
-    this.setVX(this.getVX() - this.getVY())
+    this.setVX(vx - this.getVY())
     this.setVF(vx < this.getVX() ? 0 : 1)
   }
 
@@ -222,7 +222,7 @@ class Chip8 {
 
   code8XY7(): void {
     const vx = this.getVX()
-    this.setVX(this.getVY() - this.getVX())
+    this.setVX(this.getVY() - vx)
     this.setVF(vx < this.getVX() ? 0 : 1)
   }
 
