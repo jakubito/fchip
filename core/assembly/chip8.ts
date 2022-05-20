@@ -253,20 +253,17 @@ class Chip8 {
     const positionY = this.getVY() % 32
     this.setVF(0)
 
-    for (let rowIndex: u8 = 0; rowIndex < this.getN(); rowIndex++) {
-      const spriteRow = this.memory[this.index + rowIndex]
+    for (let row: u8 = 0; row < this.getN(); row++) {
+      const spriteRow = this.memory[this.index + row]
 
-      for (let columnIndex: u8 = 0; columnIndex < 8; columnIndex++) {
-        const spritePixel = (spriteRow >> (7 - columnIndex)) & 1
-        const pixelIndex = <u16>(positionY + rowIndex) * 64 + positionX + columnIndex
+      for (let column: u8 = 0; column < 8; column++) {
+        const spritePixel = (spriteRow >> (7 - column)) & 1
+        const pixelIndex = <u16>((positionY + row) % 32) * 64 + ((positionX + column) % 64)
         const oldPixel = this.screen[pixelIndex]
+
         this.screen[pixelIndex] ^= spritePixel
-
         if (oldPixel === 1 && this.screen[pixelIndex] === 0) this.setVF(1)
-        if (positionX + columnIndex === 63) break
       }
-
-      if (positionY + rowIndex === 31) break
     }
   }
 
