@@ -2,15 +2,12 @@
 
 html,
 body {
-  background-color: #fafafa;
+  background-color: #f9f9f9;
 }
 
 #display {
-  margin-top: 100px;
-}
-
-#display canvas {
-  background-color: #222222;
+  margin-top: 50px;
+  background-color: #202020;
   border-radius: 2px;
   box-shadow: rgba(17, 17, 26, 0.1) 0px 4px 16px, rgba(17, 17, 26, 0.1) 0px 8px 24px,
     rgba(17, 17, 26, 0.1) 0px 16px 56px;

@@ -1,16 +1,15 @@
-import Two from 'two.js'
-import { Constants } from 'two.js/src/constants'
-import { Rectangle } from 'two.js/src/shapes/rectangle'
 import { Oscillator, Volume } from 'tone'
 import { instantiate } from '../core/build/core'
 import { setPreciseInterval } from './helpers'
 import { Keymap } from './enums'
 import './style.css'
 
-let CYCLES_PER_SECOND = 1000
+let cyclesPerSecond = 1000
 let screenScale = 1
-const PIXEL_SIZE = 10
-const PIXEL_COLOR = '#f9f9f9'
+const colors = [
+  [32, 32, 32],
+  [249, 249, 249],
+]
 
 const moduleUrl = import.meta.env.PROD
   ? `/core.wasm?v=${import.meta.env.VITE_APP_CORE_VERSION}`
@@ -29,7 +28,7 @@ const timers = new Uint8ClampedArray(buffer, module.getTimersPointer(instance), 
 
 const fileInput = document.querySelector<HTMLInputElement>('#file')!
 const loadButton = document.querySelector<HTMLButtonElement>('#load')!
-const display = document.querySelector<HTMLDivElement>('#display')!
+const display = document.querySelector<HTMLCanvasElement>('#display')!
 const cyclesInput = document.querySelector<HTMLInputElement>('#cycles-input')!
 const cyclesValue = document.querySelector<HTMLSpanElement>('#cycles-value')!
 const scaleInput = document.querySelector<HTMLInputElement>('#scale')!
@@ -37,20 +36,12 @@ const volumeInput = document.querySelector<HTMLInputElement>('#volume')!
 
 const volumeNode = new Volume(-35).toDestination()
 const oscillator = new Oscillator(800, 'square').connect(volumeNode)
-const pixels = new Array<Rectangle>(screen.length)
-const two = new Two({ type: Constants.Types.canvas, width: 640, height: 320 }).appendTo(display)
+const frameBuffer = new Uint8ClampedArray(screen.length * 4).fill(255)
+const frameImageData = new ImageData(frameBuffer, 64, 32)
+const displayContext = display.getContext('2d')!
+setDisplayScale(screenScale)
 
 let stop: () => void
-
-for (let i = 0; i < screen.length; i++) {
-  const x = (i % 64) * PIXEL_SIZE + PIXEL_SIZE / 2
-  const y = Math.floor(i / 64) * PIXEL_SIZE + PIXEL_SIZE / 2
-  const pixel = two.makeRectangle(x, y, PIXEL_SIZE, PIXEL_SIZE)
-  pixel.noStroke()
-  pixel.fill = PIXEL_COLOR
-  pixel.visible = false
-  pixels[i] = pixel
-}
 
 document.addEventListener('keydown', (event) => {
   if (!Keymap.hasOwnProperty(event.code)) return
@@ -80,22 +71,12 @@ loadButton.addEventListener('click', async () => {
 })
 
 cyclesInput.addEventListener('input', () => {
-  CYCLES_PER_SECOND = Number(cyclesInput.value)
+  cyclesPerSecond = Number(cyclesInput.value)
   cyclesValue.innerHTML = cyclesInput.value
 })
 
 scaleInput.addEventListener('input', () => {
-  screenScale = Number(scaleInput.value) / 100
-  two.width = 640 * screenScale
-  two.height = 320 * screenScale
-  for (let i = 0; i < screen.length; i++) {
-    pixels[i].translation.x = (i % 64) * (PIXEL_SIZE * screenScale) + (PIXEL_SIZE * screenScale) / 2
-    pixels[i].translation.y =
-      Math.floor(i / 64) * (PIXEL_SIZE * screenScale) + (PIXEL_SIZE * screenScale) / 2
-    pixels[i].width = PIXEL_SIZE * screenScale
-    pixels[i].height = PIXEL_SIZE * screenScale
-  }
-  two.update()
+  setDisplayScale(Number(scaleInput.value) / 100)
 })
 
 volumeInput.addEventListener('input', () => {
@@ -107,6 +88,14 @@ volumeInput.addEventListener('input', () => {
     volumeNode.volume.value = -30 * ((100 - value) / 100) - 20
   }
 })
+
+function setDisplayScale(scale: number) {
+  display.width = 640 * scale * window.devicePixelRatio
+  display.height = 320 * scale * window.devicePixelRatio
+  display.style.width = `${640 * scale}px`
+  display.style.height = `${320 * scale}px`
+  displayContext.imageSmoothingEnabled = false
+}
 
 function load(buffer: ArrayBuffer) {
   stop?.()
@@ -120,16 +109,21 @@ function start() {
   const clearTimers = setTimers()
   let previousTime = performance.now()
 
-  function frame(time: DOMHighResTimeStamp) {
+  function renderFrame(time: DOMHighResTimeStamp) {
     const delta = time - previousTime
-    const cycles = Math.round(delta / (1000 / CYCLES_PER_SECOND))
+    const cycles = Math.round(delta / (1000 / cyclesPerSecond))
     previousTime = time
 
     for (let i = 0; i < cycles; i++) module.runCycle(instance)
-    for (let i = 0; i < screen.length; i++) pixels[i].visible = Boolean(screen[i])
+    for (let i = 0; i < screen.length; i++) {
+      frameBuffer[i * 4] = colors[screen[i]][0]
+      frameBuffer[i * 4 + 1] = colors[screen[i]][1]
+      frameBuffer[i * 4 + 2] = colors[screen[i]][2]
+    }
 
-    two.update()
-    id.value = requestAnimationFrame(frame)
+    displayContext.putImageData(frameImageData, 0, 0)
+    displayContext.drawImage(display, 0, 0, 64, 32, 0, 0, display.width, display.height)
+    id.value = requestAnimationFrame(renderFrame)
   }
 
   function stop() {
@@ -137,7 +131,7 @@ function start() {
     clearTimers()
   }
 
-  id.value = requestAnimationFrame(frame)
+  id.value = requestAnimationFrame(renderFrame)
 
   return stop
 }
