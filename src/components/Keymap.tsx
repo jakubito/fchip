@@ -1,4 +1,4 @@
-import keymapImage from '../keymap.svg'
+import keymapImage from '../assets/keymap.svg'
 
 function KeysLayout() {
   return (

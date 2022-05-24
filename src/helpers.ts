@@ -2,7 +2,7 @@ export function setPreciseInterval(handler: Function, timeout: number, ...args: 
   const id = { value: 0 }
   let next = performance.now()
 
-  function tick() {
+  const tick = () => {
     return setTimeout(() => {
       next += timeout
       handler(...args)
@@ -10,11 +10,7 @@ export function setPreciseInterval(handler: Function, timeout: number, ...args: 
     }, timeout - (performance.now() - next))
   }
 
-  function clearInterval() {
-    clearTimeout(id.value)
-  }
-
   id.value = tick()
 
-  return clearInterval
+  return () => clearTimeout(id.value)
 }

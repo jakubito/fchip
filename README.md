@@ -6,7 +6,7 @@ FCHIP is a [CHIP-8](https://en.wikipedia.org/wiki/CHIP-8) interpreter (aka emula
 
 [![Netlify Status](https://api.netlify.com/api/v1/badges/9116e281-20c3-4c20-a13b-5b8c9b18ac82/deploy-status)](https://app.netlify.com/sites/fchip/deploys)
 
-![screenshot.png](https://raw.githubusercontent.com/jakubito/fchip/master/screenshot.png)
+![screenshot.png](https://raw.githubusercontent.com/jakubito/fchip/master/public/screenshot.png)
 
 ## Features
 
