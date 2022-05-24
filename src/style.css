@@ -1,14 +1,39 @@
 @import 'bootstrap/dist/css/bootstrap';
+@import 'bootstrap-icons/font/bootstrap-icons.css';
 
 html,
 body {
-  background-color: #f9f9f9;
+  background-color: #efefef;
 }
 
 #display {
-  margin-top: 50px;
-  background-color: #202020;
+  margin-top: 60px;
+  margin-bottom: 50px;
+}
+
+#display > canvas {
+  background-color: rgb(32, 32, 32);
   border-radius: 2px;
   box-shadow: rgba(17, 17, 26, 0.1) 0px 4px 16px, rgba(17, 17, 26, 0.1) 0px 8px 24px,
     rgba(17, 17, 26, 0.1) 0px 16px 56px;
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+  pointer-events: all;
+  opacity: 0.55;
+}
+
+.form-label {
+  display: block;
+}
+
+.form-range {
+  min-width: 200px;
+}
+
+h1 {
+  font-family: 'VT323', monospace;
+  font-size: 3rem;
+  line-height: 1;
 }

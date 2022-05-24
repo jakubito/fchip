@@ -1,17 +1,13 @@
 {
-  "name": "chip8-core",
+  "name": "fchip-core",
   "private": true,
-  "version": "0.0.1",
-  "description": "CHIP-8 core",
+  "version": "1.0.0",
+  "description": "FCHIP core",
   "author": "Jakub Dobes <dobes.jakub@gmail.com>",
   "license": "ISC",
   "scripts": {
     "build:debug": "asc assembly/index.ts --target debug",
-    "postbuild:debug": "cp build/debug.js build/core.js && cp build/debug.d.ts build/core.d.ts",
-    "build:release": "asc assembly/index.ts --target release",
-    "build": "npm run build:debug && npm run build:release",
-    "serve": "npx serve build -p 8001 --cors",
-    "get:version": "echo $npm_package_version"
+    "build:release": "asc assembly/index.ts --target release"
   },
   "devDependencies": {
     "assemblyscript": "^0.20.6"

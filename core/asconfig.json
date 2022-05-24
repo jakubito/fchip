@@ -1,8 +1,8 @@
 {
   "targets": {
     "debug": {
-      "outFile": "build/debug.wasm",
-      "textFile": "build/debug.wat",
+      "outFile": "build/core.wasm",
+      "textFile": "build/core.wat",
       "sourceMap": true,
       "debug": true
     },

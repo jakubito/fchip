@@ -39,6 +39,7 @@ For the delay and sound timers running at 60 Hz, a self-correcting recursive `se
 
 ## Planned features
 
+- Increase roms compatibility
 - Add support for various CHIP-8 extensions (SCHIP, GCHIP, XO-CHIP...)
 - Customizable controls
 
@@ -46,6 +47,10 @@ For the delay and sound timers running at 60 Hz, a self-correcting recursive `se
 
 - [CHIP-8 Research Facility](https://chip-8.github.io)
 - [High-level guide to making a CHIP-8 emulator](https://tobiasvl.github.io/blog/write-a-chip-8-emulator)
+
+## Credits
+
+Included games were downloaded from [David Winter's CHIP-8 emulation page](https://www.pong-story.com/chip8/)
 
 ## Bug reporting
 
