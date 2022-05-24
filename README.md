@@ -6,7 +6,7 @@ FCHIP is a [CHIP-8](https://en.wikipedia.org/wiki/CHIP-8) interpreter (aka emula
 
 [![Netlify Status](https://api.netlify.com/api/v1/badges/9116e281-20c3-4c20-a13b-5b8c9b18ac82/deploy-status)](https://app.netlify.com/sites/fchip/deploys)
 
-SCREENSHOT GOES HERE
+![screenshot.png](https://raw.githubusercontent.com/jakubito/fchip/master/screenshot.png)
 
 ## Features
 
@@ -39,7 +39,7 @@ For the delay and sound timers running at 60 Hz, a self-correcting recursive `se
 
 ## Planned features
 
-- Increase roms compatibility
+- Improve roms compatibility
 - Add support for various CHIP-8 extensions (SCHIP, GCHIP, XO-CHIP...)
 - Customizable controls
 
