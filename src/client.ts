@@ -1,7 +1,7 @@
 import { Oscillator, Volume } from 'tone'
-import { Keymap, Status } from './enums'
+import { colorSchemes, Keymap, Status } from './enums'
 import { setPreciseInterval } from './helpers'
-import { Color, CoreInstance, CoreModule } from './types'
+import { CoreInstance, CoreModule } from './types'
 
 class Client {
   private module: CoreModule
@@ -24,10 +24,7 @@ class Client {
   private _volume = 50
   private _screenScale = 10
   cyclesPerSecond = 800
-  colors: [Color, Color] = [
-    [32, 32, 32],
-    [249, 249, 249],
-  ]
+  colors = colorSchemes[0].colors
 
   constructor(module: CoreModule) {
     // @ts-ignore

@@ -41,8 +41,8 @@ function Settings() {
               Color scheme
             </label>
             <select id="scheme" class="form-select form-select-sm" onInput={onSchemeInput}>
-              {Object.entries(colorSchemes).map(([id, scheme]) => (
-                <option value={id} key={id}>
+              {colorSchemes.map((scheme, index) => (
+                <option value={index} key={index}>
                   {scheme.name}
                 </option>
               ))}

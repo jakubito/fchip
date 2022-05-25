@@ -54,33 +54,33 @@ export const games: Game[] = [
   { name: 'WIPEOFF', file: '/roms/WIPEOFF' },
 ]
 
-export const colorSchemes: Record<number, ColorScheme> = {
-  1: {
+export const colorSchemes: ColorScheme[] = [
+  {
     name: 'White on black',
     colors: [
       [32, 32, 32],
       [249, 249, 249],
     ],
   },
-  2: {
+  {
     name: 'Black on white',
     colors: [
       [249, 249, 249],
       [32, 32, 32],
     ],
   },
-  3: {
+  {
     name: 'LCD',
     colors: [
       [168, 192, 176],
       [20, 20, 20],
     ],
   },
-  4: {
+  {
     name: 'HP-48G',
     colors: [
       [87, 120, 88],
       [0, 37, 108],
     ],
   },
-}
+]
