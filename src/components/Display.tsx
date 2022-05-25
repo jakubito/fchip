@@ -7,11 +7,16 @@ function Display() {
   const [fullscreen, setFullscreen] = useState(false)
 
   useEffect(() => {
-    client.appendCanvasTo(display.current!)
+    const onFullscreenChange = () => {
+      setFullscreen(document.fullscreenElement === display.current)
+    }
 
-    document.addEventListener('fullscreenchange', () => {
-      setFullscreen(Boolean(document.fullscreenElement))
-    })
+    client.appendCanvasTo(display.current!)
+    document.addEventListener('fullscreenchange', onFullscreenChange)
+
+    return () => {
+      document.removeEventListener('fullscreenchange', onFullscreenChange)
+    }
   }, [])
 
   return (

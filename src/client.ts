@@ -131,27 +131,40 @@ class Client {
     target.appendChild(this.canvas)
   }
 
+  dispose() {
+    this.stop()
+    this.unbindKeys()
+  }
+
+  private onKeyDown = (event: KeyboardEvent) => {
+    if (!Keymap.hasOwnProperty(event.code)) return
+    if (event.repeat) return
+
+    const keyValue = Keymap[<keyof typeof Keymap>event.code]
+    this.keys[keyValue] = 1
+  }
+
+  private onKeyUp = (event: KeyboardEvent) => {
+    if (!Keymap.hasOwnProperty(event.code)) return
+    if (event.repeat) return
+
+    const keyValue = Keymap[<keyof typeof Keymap>event.code]
+    this.keys[keyValue] = 0
+
+    if (this.memory[0xb0] === 1) {
+      this.memory[0xb0] = 2
+      this.memory[0xb1] = keyValue
+    }
+  }
+
   private bindKeys() {
-    document.addEventListener('keydown', (event) => {
-      if (!Keymap.hasOwnProperty(event.code)) return
-      if (event.repeat) return
+    document.addEventListener('keydown', this.onKeyDown)
+    document.addEventListener('keyup', this.onKeyUp)
+  }
 
-      const keyValue = Keymap[<keyof typeof Keymap>event.code]
-      this.keys[keyValue] = 1
-    })
-
-    document.addEventListener('keyup', (event) => {
-      if (!Keymap.hasOwnProperty(event.code)) return
-      if (event.repeat) return
-
-      const keyValue = Keymap[<keyof typeof Keymap>event.code]
-      this.keys[keyValue] = 0
-
-      if (this.memory[0xb0] === 1) {
-        this.memory[0xb0] = 2
-        this.memory[0xb1] = keyValue
-      }
-    })
+  private unbindKeys() {
+    document.removeEventListener('keydown', this.onKeyDown)
+    document.removeEventListener('keyup', this.onKeyUp)
   }
 
   private setTimers() {
