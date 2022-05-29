@@ -167,15 +167,15 @@ class Chip8 {
   }
 
   code3XNN(): void {
-    if (this.getVX() === this.getNN()) this.pc += 2
+    if (this.getVX() == this.getNN()) this.pc += 2
   }
 
   code4XNN(): void {
-    if (this.getVX() !== this.getNN()) this.pc += 2
+    if (this.getVX() != this.getNN()) this.pc += 2
   }
 
   code5XY0(): void {
-    if (this.getVX() === this.getVY()) this.pc += 2
+    if (this.getVX() == this.getVY()) this.pc += 2
   }
 
   code6XNN(): void {
@@ -233,7 +233,7 @@ class Chip8 {
   }
 
   code9XY0(): void {
-    if (this.getVX() !== this.getVY()) this.pc += 2
+    if (this.getVX() != this.getVY()) this.pc += 2
   }
 
   codeANNN(): void {
@@ -262,17 +262,17 @@ class Chip8 {
         const oldPixel = this.screen[pixelIndex]
 
         this.screen[pixelIndex] ^= spritePixel
-        if (oldPixel === 1 && this.screen[pixelIndex] === 0) this.setVF(1)
+        if (oldPixel == 1 && this.screen[pixelIndex] == 0) this.setVF(1)
       }
     }
   }
 
   codeEXA1(): void {
-    if (this.keys[this.getVX()] === 0) this.pc += 2
+    if (this.keys[this.getVX()] == 0) this.pc += 2
   }
 
   codeEX9E(): void {
-    if (this.keys[this.getVX()] === 1) this.pc += 2
+    if (this.keys[this.getVX()] == 1) this.pc += 2
   }
 
   codeFX07(): void {
@@ -280,7 +280,7 @@ class Chip8 {
   }
 
   codeFX0A(): void {
-    if (this.memory[0xb0] === 2) {
+    if (this.memory[0xb0] == 2) {
       this.memory[0xb0] = 0
       this.setVX(this.memory[0xb1])
     } else {
